@@ -1,0 +1,101 @@
+<html>
+<head>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+<style>
+
+</style>
+
+</head>
+<body>
+    <div class="container grid-hero grid-lg text-center">
+        
+        
+            <div id="instructions" >
+               
+                
+                <button onclick="BeginTest()">Iniciar Test</button>         
+            </div>
+        </div>
+        <div id="test" >
+            <div id="randomWords" align="center">
+
+            </div>
+
+            
+	<button onclick="BeginTest()" align="center">Iniciar Otro Test</button
+        </div>
+        <div class="text-left col-mx-auto column col-6 col-xs-12">
+            <div id="results" style="display: none;">
+                <p><span id="testTime"></span> Segundos.</p>
+            </div>
+              
+        </div>
+    </div>
+    <script>
+        console.log("Script executed");
+        var time = 0;
+        var timerHandle = 0;
+        function IncrementTime() {
+            time += 0.01;
+        }
+        
+        function AcceptWarning() {
+            document.getElementById("info").style.display = "none";
+            document.getElementById("form").style.display = "block";
+        }
+        function DoneForm() {
+            document.getElementById("form").style.display = "none";
+            document.getElementById("instructions").style.display = "block";
+        }
+
+        function BeginTest() {
+            console.log("Beginning test");
+            document.getElementById("instructions").style.display = "none";
+            document.getElementById("test").style.display = "block";
+            timerHandle = setInterval(IncrementTime, 10);
+            GenerateRandomWords(10, 10);
+        }
+        function GenerateRandomWords(rows, columns) {
+            var wordHTML = "<table style='font-size: large;'>";
+
+            var words = ["Red", "Orange", "Yellow", "Green", "Blue", "Indigo", "Violet"];
+
+            for(var i = 0; i < rows; i++) {
+                wordHTML += "<tr>";
+                for(var j = 0; j < columns; j++) {
+                    var randomIndex1 = Math.floor(Math.random() * words.length);
+                    var randomIndex2 = Math.floor(Math.random() * words.length);
+
+                    wordHTML += "<th><span style='color: " + words[randomIndex1] + "'>" + words[randomIndex2] + "</span></th>"; 
+
+                }
+                wordHTML += "</tr>";
+            }
+
+            wordHTML += "</table>";
+
+            document.getElementById("randomWords").innerHTML = wordHTML;
+        }
+        function EndTest() {
+            clearTimeout(timerHandle);
+            console.log("Finished test in " + time + " s");
+            document.getElementById("test").style.display = "none";
+            document.getElementById("results").style.display = "block";
+            document.getElementById("testTime").innerHTML = "" + Math.round(time * 100) / 100;
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://142.44.162.108:4000/submitData", true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify(
+             {
+                "date": (new Date()).getTime(),
+                "age": document.getElementById("ageInp").value,
+                "gender": document.getElementById("genderInp").value,
+                "time": time
+            }));
+        }
+    </script>
+</body>
+</html>
